@@ -1,0 +1,66 @@
+import 'package:go_router/go_router.dart';
+import '../screens/auth/splash_screen.dart';
+import '../screens/auth/login_screen.dart';
+import '../screens/profile/profile_screen.dart';
+import '../screens/about_us/about_us_screen.dart';
+import '../screens/patho_lab/patho_lab_list_screen.dart';
+import '../screens/patho_lab/patho_lab_details_screen.dart';
+import '../screens/lab_test/lab_test_list_screen.dart';
+import '../screens/lab_test/lab_test_details_screen.dart';
+import '../screens/lab_test/test_package_list_screen.dart';
+import '../screens/lab_test/test_package_details_screen.dart';
+
+final appRouter = GoRouter(
+  initialLocation: '/splash',
+  routes: [
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfileScreen(),
+    ),
+    GoRoute(
+      path: '/about-us',
+      builder: (context, state) => const AboutUsScreen(),
+    ),
+    GoRoute(
+      path: '/patho-lab-list',
+      builder: (context, state) => const PathoLabListScreen(),
+    ),
+    GoRoute(
+      path: '/patho-lab-details/:labId',
+      builder: (context, state) {
+        final labId = state.pathParameters['labId']!;
+        return PathoLabDetailsScreen(labId: labId);
+      },
+    ),
+    GoRoute(
+      path: '/lab-test-list',
+      builder: (context, state) => const LabTestListScreen(),
+    ),
+    GoRoute(
+      path: '/lab-test-details/:testId',
+      builder: (context, state) {
+        final testId = state.pathParameters['testId']!;
+        return LabTestDetailsScreen(testId: testId);
+      },
+    ),
+    GoRoute(
+      path: '/test-package-list',
+      builder: (context, state) => const TestPackageListScreen(),
+    ),
+    GoRoute(
+      path: '/test-package-details/:packageId',
+      builder: (context, state) {
+        final packageId = state.pathParameters['packageId']!;
+        return TestPackageDetailsScreen(packageId: packageId);
+      },
+    ),
+  ],
+);
