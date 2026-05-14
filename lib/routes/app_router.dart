@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import '../screens/auth/splash_screen.dart';
 import '../screens/auth/login_screen.dart';
+import '../screens/auth/signup_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/about_us/about_us_screen.dart';
 import '../screens/patho_lab/patho_lab_list_screen.dart';
@@ -20,6 +21,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/signup/:phone',
+      builder: (context, state) {
+        final phone = state.pathParameters['phone']!;
+        return SignupScreen(phoneNumber: phone);
+      },
     ),
     GoRoute(
       path: '/profile',

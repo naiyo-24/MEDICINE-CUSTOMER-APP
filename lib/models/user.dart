@@ -1,53 +1,71 @@
 import 'dart:convert';
 
 class UserModel {
-  final String? id;
+  final String? customerId;
   final String? phoneNumber;
-  final String? name;
+  final String? fullName;
   final String? email;
+  final String? alternativePhoneNo;
+  final List<dynamic>? savedAddresses;
+  final String? profilePhoto;
   final String? token;
 
   UserModel({
-    this.id,
+    this.customerId,
     this.phoneNumber,
-    this.name,
+    this.fullName,
     this.email,
+    this.alternativePhoneNo,
+    this.savedAddresses,
+    this.profilePhoto,
     this.token,
   });
 
   UserModel copyWith({
-    String? id,
+    String? customerId,
     String? phoneNumber,
-    String? name,
+    String? fullName,
     String? email,
+    String? alternativePhoneNo,
+    List<dynamic>? savedAddresses,
+    String? profilePhoto,
     String? token,
   }) {
     return UserModel(
-      id: id ?? this.id,
+      customerId: customerId ?? this.customerId,
       phoneNumber: phoneNumber ?? this.phoneNumber,
-      name: name ?? this.name,
+      fullName: fullName ?? this.fullName,
       email: email ?? this.email,
+      alternativePhoneNo: alternativePhoneNo ?? this.alternativePhoneNo,
+      savedAddresses: savedAddresses ?? this.savedAddresses,
+      profilePhoto: profilePhoto ?? this.profilePhoto,
       token: token ?? this.token,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'phoneNumber': phoneNumber,
-      'name': name,
+      'customer_id': customerId,
+      'phone_number': phoneNumber,
+      'full_name': fullName,
       'email': email,
+      'alternative_phone_no': alternativePhoneNo,
+      'saved_addresses': savedAddresses,
+      'profile_photo': profilePhoto,
       'token': token,
     };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      id: map['id'],
-      phoneNumber: map['phoneNumber'],
-      name: map['name'],
+      customerId: map['customer_id'] ?? map['customerId'],
+      phoneNumber: map['phone_number'] ?? map['phoneNumber'],
+      fullName: map['full_name'] ?? map['fullName'] ?? map['name'],
       email: map['email'],
-      token: map['token'],
+      alternativePhoneNo: map['alternative_phone_no'] ?? map['alternativePhoneNo'],
+      savedAddresses: map['saved_addresses'] ?? map['savedAddresses'],
+      profilePhoto: map['profile_photo'] ?? map['profilePhoto'],
+      token: map['token'] ?? map['backend_token'],
     );
   }
 
@@ -57,6 +75,6 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(id: $id, phoneNumber: $phoneNumber, name: $name, email: $email, token: $token)';
+    return 'UserModel(customerId: $customerId, phoneNumber: $phoneNumber, fullName: $fullName, email: $email, token: $token)';
   }
 }

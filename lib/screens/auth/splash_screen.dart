@@ -6,20 +6,28 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_theme.dart';
 
-class SplashScreen extends StatefulWidget {
+import '../../providers/auth_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
     Timer(const Duration(milliseconds: 2500), () {
       if (mounted) {
-        context.go('/login');
+        final user = ref.read(authProvider).user;
+        if (user != null) {
+          context.go('/patho-lab-list');
+        } else {
+          context.go('/login');
+        }
       }
     });
   }

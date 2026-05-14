@@ -5,8 +5,10 @@ import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:pinput/pinput.dart';
 import 'package:go_router/go_router.dart';
 import '../../cards/auth/contact_bottomsheet.dart';
+import '../../notifiers/auth_notifier.dart';
 import '../../theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -19,6 +21,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final PageController _pageController = PageController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
+  String? _verificationId;
+  bool _isSendingOtp = false;
 
   void _nextPage() {
     _pageController.nextPage(
@@ -32,6 +36,95 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       duration: const Duration(milliseconds: 400),
       curve: Curves.easeInOut,
     );
+  }
+
+  Future<void> _handleSendOtp() async {
+    if (_phoneController.text.length != 10) return;
+
+    setState(() => _isSendingOtp = true);
+    final exists = await ref
+        .read(authProvider.notifier)
+        .checkPhone(_phoneController.text);
+
+    if (exists) {
+      await _sendFirebaseOtp();
+    } else {
+      setState(() => _isSendingOtp = false);
+      if (mounted) {
+        context.push('/signup/${_phoneController.text}');
+      }
+    }
+  }
+
+  Future<void> _sendFirebaseOtp() async {
+    try {
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: '+91${_phoneController.text}',
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Auto-resolution
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          if (mounted) {
+            setState(() => _isSendingOtp = false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Verification Failed: ${e.message}')),
+            );
+          }
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          if (mounted) {
+            setState(() {
+              _verificationId = verificationId;
+              _isSendingOtp = false;
+            });
+            _nextPage();
+          }
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          if (mounted) {
+            _verificationId = verificationId;
+          }
+        },
+      );
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSendingOtp = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      }
+    }
+  }
+
+  Future<void> _handleVerifyOtp() async {
+    if (_otpController.text.length != 6 || _verificationId == null) return;
+
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId!,
+        smsCode: _otpController.text,
+      );
+
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+      final idToken = await userCredential.user?.getIdToken();
+
+      if (idToken != null) {
+        final success = await ref
+            .read(authProvider.notifier)
+            .verifyOtp(token: idToken, phoneNumber: _phoneController.text);
+        if (success && mounted) {
+          context.go('/patho-lab-list');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login Failed: ${e.toString()}')),
+        );
+      }
+    }
   }
 
   @override
@@ -59,10 +152,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: PageView(
                   controller: _pageController,
                   physics: const NeverScrollableScrollPhysics(),
-                  children: [_buildPhoneSlide(), _buildOtpSlide()],
+                  children: [
+                    _buildPhoneSlide(authState),
+                    _buildOtpSlide(authState),
+                  ],
                 ),
               ),
-              if (authState.isLoading)
+              if (authState.isLoading || _isSendingOtp)
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.all(20),
@@ -76,7 +172,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildPhoneSlide() {
+  Widget _buildPhoneSlide(AuthState authState) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -136,12 +232,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {
-              if (_phoneController.text.length == 10) {
-                ref.read(authProvider.notifier).login(_phoneController.text);
-                _nextPage();
-              }
-            },
+            onPressed: (authState.isLoading || _isSendingOtp)
+                ? null
+                : _handleSendOtp,
             child: const Text('Send OTP'),
           ),
         ),
@@ -171,7 +264,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildOtpSlide() {
+  Widget _buildOtpSlide(AuthState authState) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -245,11 +338,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {
-              if (_otpController.text.length == 6) {
-                ref.read(authProvider.notifier).verifyOtp(_otpController.text);
-              }
-            },
+            onPressed: (authState.isLoading || _isSendingOtp)
+                ? null
+                : _handleVerifyOtp,
             child: const Text('Verify and Login'),
           ),
         ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 import '../../models/user.dart';
 
+import '../../cards/services/api_url.dart';
+
 class ProfileHeaderCard extends StatelessWidget {
   final UserModel user;
 
@@ -57,6 +59,12 @@ class ProfileHeaderCard extends StatelessWidget {
                     color: Colors.white.withAlpha(100),
                     width: 4,
                   ),
+                  image: user.profilePhoto != null
+                      ? DecorationImage(
+                          image: NetworkImage(ApiUrl.imageUrl(user.profilePhoto)),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withAlpha(30),
@@ -65,13 +73,15 @@ class ProfileHeaderCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Center(
-                  child: Icon(
-                    Icons.person_rounded,
-                    size: 55,
-                    color: AppColors.primary.withAlpha(200),
-                  ),
-                ),
+                child: user.profilePhoto == null
+                    ? Center(
+                        child: Icon(
+                          Icons.person_rounded,
+                          size: 55,
+                          color: AppColors.primary.withAlpha(200),
+                        ),
+                      )
+                    : null,
               ),
               const SizedBox(width: 20),
               Expanded(
@@ -79,7 +89,7 @@ class ProfileHeaderCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user.name ?? 'Guest User',
+                      user.fullName ?? 'Guest User',
                       style: AppTextStyles.header.copyWith(
                         color: Colors.white,
                         fontSize: 24,
