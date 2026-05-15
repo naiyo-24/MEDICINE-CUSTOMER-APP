@@ -61,53 +61,61 @@ class _MedicineListScreenState extends ConsumerState<MedicineListScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.screenPadding,
-              10,
-              AppSpacing.screenPadding,
-              10,
+      body: RefreshIndicator(
+        onRefresh: () =>
+            ref.read(medicineProvider.notifier).fetchAllMedicines(),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.screenPadding,
+                  16,
+                  AppSpacing.screenPadding,
+                  8,
+                ),
+                child: OrderWithPrescriptionCard(
+                  onTap: () => context.push('/order-with-prescription'),
+                ),
+              ),
             ),
-            child: OrderWithPrescriptionCard(
-              onTap: () => context.push('/order-with-prescription'),
-            ),
-          ),
-          Expanded(
-            child: medicineState.isLoading && medicineState.medicines.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : medicineState.error != null
-                ? Center(child: Text(medicineState.error!))
-                : RefreshIndicator(
-                    onRefresh: () =>
-                        ref.read(medicineProvider.notifier).fetchAllMedicines(),
-                    child: GridView.builder(
-                      padding: const EdgeInsets.all(AppSpacing.screenPadding),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.62,
-                            crossAxisSpacing: AppSpacing.elementGap,
-                            mainAxisSpacing: AppSpacing.elementGap,
-                          ),
-                      itemCount: medicineState.medicines.length,
-                      itemBuilder: (context, index) {
-                        final medicine = medicineState.medicines[index];
-                        return MedicineCard(
-                          medicine: medicine,
-                          onTap: () {
-                            ref
-                                .read(medicineProvider.notifier)
-                                .selectMedicine(medicine);
-                            context.push('/medicine-details');
-                          },
-                        );
-                      },
-                    ),
+            if (medicineState.isLoading && medicineState.medicines.isEmpty)
+              const SliverFillRemaining(
+                child: Center(child: CircularProgressIndicator()),
+              )
+            else if (medicineState.error != null)
+              SliverFillRemaining(
+                child: Center(child: Text(medicineState.error!)),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.all(AppSpacing.screenPadding),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.62,
+                    crossAxisSpacing: AppSpacing.elementGap,
+                    mainAxisSpacing: AppSpacing.elementGap,
                   ),
-          ),
-        ],
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final medicine = medicineState.medicines[index];
+                    return MedicineCard(
+                      medicine: medicine,
+                      onTap: () {
+                        ref
+                            .read(medicineProvider.notifier)
+                            .selectMedicine(medicine);
+                        context.push('/medicine-details');
+                      },
+                    );
+                  }, childCount: medicineState.medicines.length),
+                ),
+              ),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 100), // Space for bottom nav
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 1,
