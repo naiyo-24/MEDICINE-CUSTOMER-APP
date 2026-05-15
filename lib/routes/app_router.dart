@@ -13,10 +13,15 @@ import '../screens/lab_test/test_package_details_screen.dart';
 import '../screens/medicine/medicine_list_screen.dart';
 import '../screens/medicine/medicine_details_screen.dart';
 import '../screens/medicine/medicine_search_screen.dart';
+import '../screens/home/home_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => const HomeScreen(),
+    ),
     GoRoute(
       path: '/splash',
       builder: (context, state) => const SplashScreen(),

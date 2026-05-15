@@ -58,7 +58,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   isActive: currentIndex == 0,
                   onTap: () {
                     HapticFeedback.lightImpact();
-                    if (currentIndex != 0) context.go('/patho-lab-list');
+                    if (currentIndex != 0) context.go('/home');
                   },
                 ),
                 _NavBarItem(

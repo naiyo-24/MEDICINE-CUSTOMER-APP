@@ -8,7 +8,7 @@ import '../../theme/app_theme.dart';
 import '../../widgets/app_bar.dart';
 import '../../widgets/bottom_nav_bar.dart';
 import '../../cards/lab_test/lab_test_card.dart';
-import '../../cards/lab_test/explore_package_card.dart';
+import '../../widgets/explore_package_card.dart';
 
 class LabTestListScreen extends ConsumerStatefulWidget {
   const LabTestListScreen({super.key});
@@ -101,7 +101,7 @@ class _LabTestListScreenState extends ConsumerState<LabTestListScreen> {
                         if (!_isSearching && index == 0) {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 24),
-                            child: NearbyPathoLabCard(
+                            child: ExplorePackageCard(
                               onTap: () => context.push('/test-package-list'),
                             ),
                           );

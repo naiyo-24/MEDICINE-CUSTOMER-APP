@@ -126,7 +126,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             );
 
         if (success && mounted) {
-          context.go('/patho-lab-list');
+          context.go('/home');
         }
       }
     } catch (e) {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_theme.dart';
+import '../theme/app_theme.dart';
 
-class NearbyPathoLabCard extends StatelessWidget {
+class ExplorePackageCard extends StatelessWidget {
   final VoidCallback onTap;
 
-  const NearbyPathoLabCard({super.key, required this.onTap});
+  const ExplorePackageCard({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

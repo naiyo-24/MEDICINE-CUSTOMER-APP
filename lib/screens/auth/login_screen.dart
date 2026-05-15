@@ -115,7 +115,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             .read(authProvider.notifier)
             .verifyOtp(token: idToken, phoneNumber: _phoneController.text);
         if (success && mounted) {
-          context.go('/patho-lab-list');
+          context.go('/home');
         }
       }
     } catch (e) {
@@ -131,7 +131,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     ref.listen(authProvider, (previous, next) {
       if (next.user != null) {
-        context.go('/patho-lab-list');
+        context.go('/home');
       }
     });
 
@@ -202,11 +202,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               child: Row(
                 children: [
-                  Image.network(
-                    'https://flagcdn.com/w40/in.png',
+                  Image.asset(
+                    'assets/logo/india.png',
                     width: 24,
                     errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.flag),
+                        const Icon(Iconsax.call),
                   ),
                   const SizedBox(width: 8),
                   const Text('+91', style: AppTextStyles.description),
