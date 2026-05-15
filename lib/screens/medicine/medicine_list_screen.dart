@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../providers/medicine_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/bottom_nav_bar.dart';
+import '../../widgets/order_with_prescription_card.dart';
 import '../../cards/medicine/medicine_card.dart';
 
 class MedicineListScreen extends ConsumerStatefulWidget {
@@ -60,36 +61,54 @@ class _MedicineListScreenState extends ConsumerState<MedicineListScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: medicineState.isLoading && medicineState.medicines.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : medicineState.error != null
-          ? Center(child: Text(medicineState.error!))
-          : RefreshIndicator(
-              onRefresh: () =>
-                  ref.read(medicineProvider.notifier).fetchAllMedicines(),
-              child: GridView.builder(
-                padding: const EdgeInsets.all(AppSpacing.screenPadding),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.62, // Adjusted to prevent overflow
-                  crossAxisSpacing: AppSpacing.elementGap,
-                  mainAxisSpacing: AppSpacing.elementGap,
-                ),
-                itemCount: medicineState.medicines.length,
-                itemBuilder: (context, index) {
-                  final medicine = medicineState.medicines[index];
-                  return MedicineCard(
-                    medicine: medicine,
-                    onTap: () {
-                      ref
-                          .read(medicineProvider.notifier)
-                          .selectMedicine(medicine);
-                      context.push('/medicine-details');
-                    },
-                  );
-                },
-              ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.screenPadding,
+              10,
+              AppSpacing.screenPadding,
+              10,
             ),
+            child: OrderWithPrescriptionCard(
+              onTap: () => context.push('/order-with-prescription'),
+            ),
+          ),
+          Expanded(
+            child: medicineState.isLoading && medicineState.medicines.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : medicineState.error != null
+                ? Center(child: Text(medicineState.error!))
+                : RefreshIndicator(
+                    onRefresh: () =>
+                        ref.read(medicineProvider.notifier).fetchAllMedicines(),
+                    child: GridView.builder(
+                      padding: const EdgeInsets.all(AppSpacing.screenPadding),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.62,
+                            crossAxisSpacing: AppSpacing.elementGap,
+                            mainAxisSpacing: AppSpacing.elementGap,
+                          ),
+                      itemCount: medicineState.medicines.length,
+                      itemBuilder: (context, index) {
+                        final medicine = medicineState.medicines[index];
+                        return MedicineCard(
+                          medicine: medicine,
+                          onTap: () {
+                            ref
+                                .read(medicineProvider.notifier)
+                                .selectMedicine(medicine);
+                            context.push('/medicine-details');
+                          },
+                        );
+                      },
+                    ),
+                  ),
+          ),
+        ],
+      ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 1,
         onTap: (index) {},

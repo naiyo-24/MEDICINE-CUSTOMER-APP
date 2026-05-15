@@ -88,9 +88,7 @@ class HomeScreen extends ConsumerWidget {
 
             // Order With Prescription Card
             OrderWithPrescriptionCard(
-              onTap: () {
-                // Handle prescription upload
-              },
+              onTap: () => context.push('/order-with-prescription'),
             ),
 
             const SizedBox(height: 32),

@@ -14,6 +14,7 @@ import '../screens/medicine/medicine_list_screen.dart';
 import '../screens/medicine/medicine_details_screen.dart';
 import '../screens/medicine/medicine_search_screen.dart';
 import '../screens/home/home_screen.dart';
+import '../screens/medicine/order_with_prescription_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/privacy_policy/privacy_policy_screen.dart';
 import '../screens/terms_conditions/terms_conditions_screen.dart';
@@ -104,6 +105,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/terms-conditions',
       builder: (context, state) => const TermsConditionsScreen(),
+    ),
+    GoRoute(
+      path: '/order-with-prescription',
+      builder: (context, state) => const OrderWithPrescriptionScreen(),
     ),
   ],
 );
