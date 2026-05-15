@@ -8,6 +8,14 @@ class ApiUrl {
   static const String getAboutUsAll = "$aboutUs/get-all";
   static String getAboutUsById(int id) => "$aboutUs/get-by/$id";
 
+  // Terms and Conditions Endpoints
+  static const String termsConditions = "$baseUrl/terms-conditions";
+  static const String getTermsConditionsAll = "$termsConditions/get-all";
+
+  // Privacy Policy Endpoints
+  static const String privacyPolicies = "$baseUrl/privacy-policies";
+  static const String getPrivacyPoliciesAll = "$privacyPolicies/get-all";
+
   // Patho Lab Endpoints
   static const String pathoLab = "$baseUrl/auth/patho-lab";
   static const String getPathoLabAll = "$pathoLab/get-all";

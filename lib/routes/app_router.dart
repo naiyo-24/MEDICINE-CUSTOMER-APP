@@ -14,6 +14,9 @@ import '../screens/medicine/medicine_list_screen.dart';
 import '../screens/medicine/medicine_details_screen.dart';
 import '../screens/medicine/medicine_search_screen.dart';
 import '../screens/home/home_screen.dart';
+import '../screens/settings/settings_screen.dart';
+import '../screens/privacy_policy/privacy_policy_screen.dart';
+import '../screens/terms_conditions/terms_conditions_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/splash',
@@ -89,6 +92,18 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/medicine-search',
       builder: (context, state) => const MedicineSearchScreen(),
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      path: '/privacy-policy',
+      builder: (context, state) => const PrivacyPolicyScreen(),
+    ),
+    GoRoute(
+      path: '/terms-conditions',
+      builder: (context, state) => const TermsConditionsScreen(),
     ),
   ],
 );
