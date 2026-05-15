@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-class OrderMedicinesCard extends StatelessWidget {
+class BookLabTestsCard extends StatelessWidget {
   final VoidCallback onTap;
 
-  const OrderMedicinesCard({super.key, required this.onTap});
+  const BookLabTestsCard({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class OrderMedicinesCard extends StatelessWidget {
                   Expanded(
                     flex: 2,
                     child: Image.asset(
-                      'assets/logo/order_medicine.png',
+                      'assets/logo/book_lab_test.png',
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -50,7 +50,7 @@ class OrderMedicinesCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'PHARMACY',
+                            'CERTIFIED PATHO LABS',
                             style: AppTextStyles.tagline.copyWith(
                               fontSize: 10,
                               letterSpacing: 1.5,
@@ -59,7 +59,7 @@ class OrderMedicinesCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          'Order \nMedicines',
+                          'Book \nLab Tests',
                           style: AppTextStyles.header.copyWith(
                             fontSize: 22,
                             height: 1.1,
@@ -67,7 +67,7 @@ class OrderMedicinesCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Get your medicines delivered at your doorstep',
+                          'Get your lab tests done at your doorstep',
                           style: AppTextStyles.caption.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -93,7 +93,7 @@ class OrderMedicinesCard extends StatelessWidget {
                               ],
                             ),
                             child: Text(
-                              'ORDER NOW',
+                              'BOOK NOW',
                               style: AppTextStyles.tagline.copyWith(
                                 color: Colors.white,
                                 fontSize: 12,

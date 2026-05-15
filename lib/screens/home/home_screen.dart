@@ -8,6 +8,7 @@ import '../../widgets/bottom_nav_bar.dart';
 import '../../widgets/explore_package_card.dart';
 import '../../widgets/order_medicines_card.dart';
 import '../../widgets/order_with_prescription_card.dart';
+import '../../widgets/book_lab_tests_card.dart';
 import '../../widgets/footer_card.dart';
 import '../../providers/home_provider.dart';
 
@@ -68,21 +69,18 @@ class HomeScreen extends ConsumerWidget {
 
             const SizedBox(height: 24),
 
+            // Book Lab Tests Card
+            BookLabTestsCard(onTap: () => context.push('/lab-test-list')),
+
+            const SizedBox(height: 16),
+
             // Explore Package Card
-            ExplorePackageCard(
-              onTap: () {
-                // Navigate to test packages
-              },
-            ),
+            ExplorePackageCard(onTap: () => context.push('/test-package-list')),
 
             const SizedBox(height: 16),
 
             // Order Medicines Card
-            OrderMedicinesCard(
-              onTap: () {
-                // Navigate to medicine list
-              },
-            ),
+            OrderMedicinesCard(onTap: () => context.push('/medicine-list')),
 
             const SizedBox(height: 16),
 
