@@ -71,6 +71,13 @@ class LabTestInventoryModel {
     this.coreTestDetails,
   });
 
+  bool get hasDiscount => discountPercent > 0 && discountAmount > 0;
+
+  double get discountAmount {
+    final savings = price - marketPrice;
+    return savings > 0 ? savings : 0;
+  }
+
   factory LabTestInventoryModel.fromJson(Map<String, dynamic> json) {
     return LabTestInventoryModel(
       testId: json['test_id'] ?? '',

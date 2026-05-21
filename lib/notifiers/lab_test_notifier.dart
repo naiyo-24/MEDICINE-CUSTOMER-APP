@@ -66,7 +66,18 @@ class LabTestNotifier extends StateNotifier<LabTestState> {
     try {
       final response = await _service.getTestById(testId);
       if (response.statusCode == 200) {
-        final test = LabTestInventoryModel.fromJson(response.data);
+        final data = response.data;
+        final testJson = data is Map<String, dynamic>
+            ? (data['test'] as Map<String, dynamic>? ?? data)
+            : null;
+        if (testJson == null) {
+          state = state.copyWith(
+            isLoading: false,
+            error: 'Invalid test details response',
+          );
+          return;
+        }
+        final test = LabTestInventoryModel.fromJson(testJson);
         state = state.copyWith(selectedTest: test, isLoading: false);
       } else {
         state = state.copyWith(
@@ -144,7 +155,18 @@ class LabTestNotifier extends StateNotifier<LabTestState> {
     try {
       final response = await _service.getPackageById(packageId);
       if (response.statusCode == 200) {
-        final package = TestPackageModel.fromJson(response.data);
+        final data = response.data;
+        final packageJson = data is Map<String, dynamic>
+            ? (data['package'] as Map<String, dynamic>? ?? data)
+            : null;
+        if (packageJson == null) {
+          state = state.copyWith(
+            isLoading: false,
+            error: 'Invalid package details response',
+          );
+          return;
+        }
+        final package = TestPackageModel.fromJson(packageJson);
         state = state.copyWith(selectedPackage: package, isLoading: false);
       } else {
         state = state.copyWith(

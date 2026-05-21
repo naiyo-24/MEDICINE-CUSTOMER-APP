@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import '../../models/lab_test.dart';
 import '../../providers/lab_test_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../cards/lab_test/lab_test_header_card.dart';
@@ -8,6 +9,9 @@ import '../../cards/lab_test/lab_test_description_parameter_card.dart';
 import '../../cards/lab_test/lab_test_sample_report_card.dart';
 import '../../cards/lab_test/lab_test_precautions_card.dart';
 import '../../cards/lab_test/lab_test_reviews_card.dart';
+import '../../cards/lab_test/lab_test_pricing_card.dart';
+import '../../cards/lab_test/lab_test_booking_bottomsheet.dart';
+import '../../cards/lab_test/lab_test_booking_bar.dart';
 
 class LabTestDetailsScreen extends ConsumerStatefulWidget {
   final String testId;
@@ -123,99 +127,34 @@ class _LabTestDetailsScreenState extends ConsumerState<LabTestDetailsScreen> {
                 LabTestSampleReportCard(test: test),
                 LabTestPrecautionsCard(test: test),
                 LabTestReviewsCard(test: test),
+                LabTestPricingCard(test: test),
                 const SizedBox(height: 120), // Bottom padding for button
               ],
             ),
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomBookingBar(test),
+      bottomNavigationBar: LabTestBookingBar(
+        test: test,
+        onBookNow: () => _onBookNow(context, test),
+      ),
       extendBody: true,
     );
   }
 
-  Widget _buildBottomBookingBar(dynamic test) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-      decoration: BoxDecoration(
-        color: Colors.white.withAlpha(240),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(15),
-            blurRadius: 30,
-            offset: const Offset(0, -10),
+  void _onBookNow(BuildContext context, LabTestInventoryModel test) {
+    LabTestBookingBottomSheet.show(
+      context,
+      test: test,
+      onConfirm: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Booking for ${test.coreTestDetails?.testName ?? 'lab test'} · ₹${test.marketPrice.toStringAsFixed(0)}',
+            ),
           ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Price to pay',
-                    style: AppTextStyles.caption.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textTertiary,
-                    ),
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(
-                        '₹${test.marketPrice.toStringAsFixed(0)}',
-                        style: AppTextStyles.header.copyWith(
-                          fontSize: 26,
-                          color: AppColors.primaryAccent,
-                        ),
-                      ),
-                      if (test.discountPercent > 0) ...[
-                        const SizedBox(width: 8),
-                        Text(
-                          '₹${test.price.toStringAsFixed(0)}',
-                          style: AppTextStyles.caption.copyWith(
-                            decoration: TextDecoration.lineThrough,
-                            color: AppColors.textTertiary,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 16),
-            SizedBox(
-              height: 56,
-              width: 160,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  elevation: 8,
-                  shadowColor: AppColors.primary.withAlpha(100),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Book Now'),
-                    const SizedBox(width: 8),
-                    const Icon(Iconsax.arrow_right_3, size: 16),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+        );
+      },
     );
   }
 }
