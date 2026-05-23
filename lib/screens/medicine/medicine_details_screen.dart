@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/cart_provider.dart';
 import '../../providers/medicine_provider.dart';
 import '../../cards/medicine/medicine_header_card.dart';
 import '../../cards/medicine/medicine_description_card.dart';
@@ -80,7 +81,18 @@ class MedicineDetailsScreen extends ConsumerWidget {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    // Add to cart logic
+                    ref.read(cartProvider.notifier).addItem(medicine);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Added to cart'),
+                        backgroundColor: AppColors.success,
+                        behavior: SnackBarBehavior.floating,
+                        duration: const Duration(seconds: 1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    );
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

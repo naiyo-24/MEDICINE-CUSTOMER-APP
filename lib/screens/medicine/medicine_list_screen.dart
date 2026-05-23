@@ -8,6 +8,7 @@ import '../../widgets/bottom_nav_bar.dart';
 import '../../widgets/order_with_prescription_card.dart';
 import '../../widgets/app_bar.dart';
 import '../../cards/medicine/medicine_card.dart';
+import '../../providers/cart_provider.dart';
 
 class MedicineListScreen extends ConsumerStatefulWidget {
   const MedicineListScreen({super.key});
@@ -59,6 +60,36 @@ class _MedicineListScreenState extends ConsumerState<MedicineListScreen> {
           IconButton(
             onPressed: () => _showFilterBottomSheet(context),
             icon: const Icon(Iconsax.filter_edit),
+          ),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                onPressed: () => context.push('/cart'),
+                icon: const Icon(Iconsax.shopping_cart),
+              ),
+              Consumer(
+                builder: (context, ref, child) {
+                  final cartItemCount = ref.watch(cartProvider).items.length;
+                  if (cartItemCount == 0) return const SizedBox.shrink();
+                  return Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppColors.error,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '$cartItemCount',
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),

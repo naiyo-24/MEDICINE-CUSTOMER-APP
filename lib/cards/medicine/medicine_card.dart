@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import '../../models/medicine.dart';
 import '../../theme/app_theme.dart';
 import '../../services/api_url.dart';
+import '../../providers/cart_provider.dart';
 
-class MedicineCard extends StatelessWidget {
+class MedicineCard extends ConsumerWidget {
   final MedicineModel medicine;
   final VoidCallback onTap;
 
   const MedicineCard({super.key, required this.medicine, required this.onTap});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isOutOfStock = medicine.isActive == false;
 
     return GestureDetector(
@@ -138,18 +140,32 @@ class MedicineCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: isOutOfStock
-                              ? AppColors.divider
-                              : AppColors.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Iconsax.add,
-                          size: 16,
-                          color: Colors.white,
+                      GestureDetector(
+                        onTap: isOutOfStock ? null : () {
+                          ref.read(cartProvider.notifier).addItem(medicine);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Added to cart'),
+                              backgroundColor: AppColors.success,
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(seconds: 1),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: isOutOfStock
+                                ? AppColors.divider
+                                : AppColors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Iconsax.add,
+                            size: 16,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ],

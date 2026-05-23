@@ -24,6 +24,7 @@ import '../screens/profile/saved_addresses_screen.dart';
 import '../screens/map/map_screen.dart';
 import '../screens/book_test_package/book_test_package_screen.dart';
 import '../screens/payment/checkout_screen.dart';
+import '../screens/cart/cart_screen.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/splash',
@@ -140,6 +141,10 @@ final appRouter = GoRouter(
         final customerId = state.pathParameters['customerId']!;
         return MyTestBookingsScreen(customerId: customerId);
       },
+    ),
+    GoRoute(
+      path: '/cart',
+      builder: (context, state) => const CartScreen(),
     ),
   ],
 );

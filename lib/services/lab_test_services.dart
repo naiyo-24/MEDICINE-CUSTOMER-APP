@@ -100,7 +100,7 @@ class LabTestService {
     try {
       final formData = FormData.fromMap({
         if (status.isNotEmpty) 'booking_status': status,
-        if (cancellationReason != null) 'cancellation_reason': cancellationReason,
+        'cancellation_reason': ?cancellationReason,
       });
       final response = await _dio.put(
         ApiUrl.updateTestPackageBooking(bookingId),
