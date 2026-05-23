@@ -42,6 +42,10 @@ class ApiUrl {
   static const String testPackageBooking = "$baseUrl/test-package-bookings";
   static const String createTestPackageBooking =
       "$testPackageBooking/create-booking";
+  static String getCustomerBookings(String customerId) =>
+      "$testPackageBooking/customer/$customerId";
+  static String updateTestPackageBooking(String bookingId) =>
+      "$testPackageBooking/update/$bookingId";
 
   // Customer Auth Endpoints
   static const String customers = "$baseUrl/customers";

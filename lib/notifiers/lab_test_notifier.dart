@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/lab_test.dart';
+import '../models/my_test_booking.dart';
 import '../services/lab_test_services.dart';
 
 class LabTestState {
@@ -9,6 +10,9 @@ class LabTestState {
   final String? error;
   final LabTestInventoryModel? selectedTest;
   final TestPackageModel? selectedPackage;
+  final List<BookingDetailResponse> myBookings;
+  final bool isBookingsLoading;
+  final String? bookingsError;
 
   LabTestState({
     this.tests = const [],
@@ -17,6 +21,9 @@ class LabTestState {
     this.error,
     this.selectedTest,
     this.selectedPackage,
+    this.myBookings = const [],
+    this.isBookingsLoading = false,
+    this.bookingsError,
   });
 
   LabTestState copyWith({
@@ -26,6 +33,9 @@ class LabTestState {
     String? error,
     LabTestInventoryModel? selectedTest,
     TestPackageModel? selectedPackage,
+    List<BookingDetailResponse>? myBookings,
+    bool? isBookingsLoading,
+    String? bookingsError,
   }) {
     return LabTestState(
       tests: tests ?? this.tests,
@@ -34,6 +44,9 @@ class LabTestState {
       error: error,
       selectedTest: selectedTest ?? this.selectedTest,
       selectedPackage: selectedPackage ?? this.selectedPackage,
+      myBookings: myBookings ?? this.myBookings,
+      isBookingsLoading: isBookingsLoading ?? this.isBookingsLoading,
+      bookingsError: bookingsError,
     );
   }
 }
@@ -176,6 +189,46 @@ class LabTestNotifier extends StateNotifier<LabTestState> {
       }
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  Future<void> fetchCustomerBookings(String customerId) async {
+    state = state.copyWith(isBookingsLoading: true, bookingsError: null);
+    try {
+      final response = await _service.getCustomerBookings(customerId);
+      if (response.statusCode == 200) {
+        final List data = response.data['bookings'] ?? [];
+        final bookings = data.map((b) => BookingDetailResponse.fromJson(b)).toList();
+        state = state.copyWith(myBookings: bookings, isBookingsLoading: false);
+      } else {
+        state = state.copyWith(isBookingsLoading: false, bookingsError: "Failed to load bookings");
+      }
+    } catch (e) {
+      state = state.copyWith(isBookingsLoading: false, bookingsError: e.toString());
+    }
+  }
+
+  Future<bool> cancelBooking(String bookingId, String reason) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final response = await _service.updateBookingStatus(bookingId, "cancelled", cancellationReason: reason);
+      if (response.statusCode == 200) {
+        final updatedBooking = BookingDetailResponse.fromJson(response.data);
+        final updatedBookings = state.myBookings.map((b) {
+          if (b.bookingId == bookingId) {
+            return updatedBooking;
+          }
+          return b;
+        }).toList();
+        state = state.copyWith(myBookings: updatedBookings, isLoading: false);
+        return true;
+      } else {
+        state = state.copyWith(isLoading: false, error: "Failed to cancel booking");
+        return false;
+      }
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
     }
   }
 }

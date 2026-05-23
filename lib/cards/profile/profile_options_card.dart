@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'package:go_router/go_router.dart';
 import '../../theme/app_theme.dart';
+import '../../providers/profile_provider.dart';
 
-class ProfileOptionsCard extends StatelessWidget {
+class ProfileOptionsCard extends ConsumerWidget {
   const ProfileOptionsCard({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileState = ref.watch(profileProvider);
+    final user = profileState.user;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -76,7 +80,15 @@ class ProfileOptionsCard extends StatelessWidget {
                   title: 'My Test Bookings',
                   subtitle: 'Check your lab test status',
                   color: AppColors.primary,
-                  onTap: () {},
+                  onTap: () {
+                    if (user?.customerId != null) {
+                      context.push('/my-test-bookings/${user!.customerId}');
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please log in first')),
+                      );
+                    }
+                  },
                 ),
                 _buildDivider(),
                 _buildOption(

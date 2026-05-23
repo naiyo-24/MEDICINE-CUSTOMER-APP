@@ -10,6 +10,7 @@ import '../screens/lab_test/lab_test_list_screen.dart';
 import '../screens/lab_test/lab_test_details_screen.dart';
 import '../screens/lab_test/test_package_list_screen.dart';
 import '../screens/lab_test/test_package_details_screen.dart';
+import '../screens/lab_test/my_test_bookings_screen.dart';
 import '../screens/medicine/medicine_list_screen.dart';
 import '../screens/medicine/medicine_details_screen.dart';
 import '../screens/medicine/medicine_search_screen.dart';
@@ -132,6 +133,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/checkout',
       builder: (context, state) => const CheckoutScreen(),
+    ),
+    GoRoute(
+      path: '/my-test-bookings/:customerId',
+      builder: (context, state) {
+        final customerId = state.pathParameters['customerId']!;
+        return MyTestBookingsScreen(customerId: customerId);
+      },
     ),
   ],
 );

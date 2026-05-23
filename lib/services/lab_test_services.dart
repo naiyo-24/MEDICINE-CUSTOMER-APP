@@ -6,15 +6,17 @@ class LabTestService {
   final Dio _dio = Dio();
 
   LabTestService() {
-    _dio.interceptors.add(PrettyDioLogger(
-      requestHeader: true,
-      requestBody: true,
-      responseBody: true,
-      responseHeader: false,
-      error: true,
-      compact: true,
-      maxWidth: 90,
-    ));
+    _dio.interceptors.add(
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        error: true,
+        compact: true,
+        maxWidth: 90,
+      ),
+    );
   }
 
   Future<Response> getAllTests({int page = 1, int limit = 20}) async {
@@ -38,7 +40,11 @@ class LabTestService {
     }
   }
 
-  Future<Response> getTestsByLabId(String labId, {int page = 1, int limit = 20}) async {
+  Future<Response> getTestsByLabId(
+    String labId, {
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
       final response = await _dio.get(
         ApiUrl.getLabTestsByLabId(labId),
@@ -60,7 +66,11 @@ class LabTestService {
     }
   }
 
-  Future<Response> getPackagesByLabId(String labId, {int page = 1, int limit = 20}) async {
+  Future<Response> getPackagesByLabId(
+    String labId, {
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
       final response = await _dio.get(
         ApiUrl.getTestPackagesByLabId(labId),
@@ -69,6 +79,36 @@ class LabTestService {
       return response;
     } on DioException catch (e) {
       throw e.message ?? "An error occurred while fetching lab's packages";
+    }
+  }
+
+  // Booking Methods
+  Future<Response> getCustomerBookings(String customerId) async {
+    try {
+      final response = await _dio.get(ApiUrl.getCustomerBookings(customerId));
+      return response;
+    } on DioException catch (e) {
+      throw e.message ?? "An error occurred while fetching customer bookings";
+    }
+  }
+
+  Future<Response> updateBookingStatus(
+    String bookingId,
+    String status, {
+    String? cancellationReason,
+  }) async {
+    try {
+      final formData = FormData.fromMap({
+        if (status.isNotEmpty) 'booking_status': status,
+        if (cancellationReason != null) 'cancellation_reason': cancellationReason,
+      });
+      final response = await _dio.put(
+        ApiUrl.updateTestPackageBooking(bookingId),
+        data: formData,
+      );
+      return response;
+    } on DioException catch (e) {
+      throw e.message ?? "An error occurred while updating booking status";
     }
   }
 }
