@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../providers/medicine_provider.dart';
 import '../../cards/medicine/medicine_search_card.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_bar.dart';
 
 class MedicineSearchScreen extends ConsumerStatefulWidget {
   const MedicineSearchScreen({super.key});
@@ -16,11 +17,25 @@ class MedicineSearchScreen extends ConsumerStatefulWidget {
 
 class _MedicineSearchScreenState extends ConsumerState<MedicineSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      ref.read(medicineProvider.notifier).searchMedicines(loadMore: true);
+    }
   }
 
   @override
@@ -29,26 +44,10 @@ class _MedicineSearchScreenState extends ConsumerState<MedicineSearchScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Iconsax.arrow_left_1, color: AppColors.textPrimary),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Search Medicines',
-              style: AppTextStyles.header.copyWith(fontSize: 18),
-            ),
-            Text(
-              'Find medicines and healthcare products',
-              style: AppTextStyles.tagline.copyWith(fontSize: 10),
-            ),
-          ],
-        ),
+      appBar: const CustomAppBar(
+        title: 'Search Medicines',
+        subtitle: 'Find medicines and healthcare products',
+        showBackButton: true,
       ),
       body: Column(
         children: [
@@ -106,16 +105,23 @@ class _MedicineSearchScreenState extends ConsumerState<MedicineSearchScreen> {
 
           // Results
           Expanded(
-            child: medicineState.isLoading
+            child: medicineState.isLoading && medicineState.searchResults.isEmpty
                 ? const Center(child: CircularProgressIndicator())
-                : _searchController.text.isEmpty
+                : _searchController.text.isEmpty && medicineState.searchResults.isEmpty
                 ? _buildEmptyState('Start typing to search')
                 : medicineState.searchResults.isEmpty
                 ? _buildEmptyState('No medicines found')
                 : ListView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.only(bottom: 20),
-                    itemCount: medicineState.searchResults.length,
+                    itemCount: medicineState.searchResults.length + (medicineState.isFetchingMoreSearch ? 1 : 0),
                     itemBuilder: (context, index) {
+                      if (index == medicineState.searchResults.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
                       final medicine = medicineState.searchResults[index];
                       return MedicineSearchCard(
                         medicine: medicine,

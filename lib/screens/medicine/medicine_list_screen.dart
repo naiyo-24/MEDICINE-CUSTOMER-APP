@@ -6,6 +6,7 @@ import '../../providers/medicine_provider.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/bottom_nav_bar.dart';
 import '../../widgets/order_with_prescription_card.dart';
+import '../../widgets/app_bar.dart';
 import '../../cards/medicine/medicine_card.dart';
 
 class MedicineListScreen extends ConsumerStatefulWidget {
@@ -16,12 +17,28 @@ class MedicineListScreen extends ConsumerStatefulWidget {
 }
 
 class _MedicineListScreenState extends ConsumerState<MedicineListScreen> {
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     Future.microtask(
       () => ref.read(medicineProvider.notifier).fetchAllMedicines(),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      ref.read(medicineProvider.notifier).fetchAllMedicines(loadMore: true);
+    }
   }
 
   @override
@@ -30,41 +47,26 @@ class _MedicineListScreenState extends ConsumerState<MedicineListScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Medicines',
-              style: AppTextStyles.header.copyWith(fontSize: 20),
-            ),
-            Text(
-              'Order from your nearest pharmacy',
-              style: AppTextStyles.tagline.copyWith(fontSize: 10),
-            ),
-          ],
-        ),
+      appBar: CustomAppBar(
+        title: 'Medicines',
+        subtitle: 'Order from your nearest pharmacy',
+        showBackButton: false,
         actions: [
           IconButton(
             onPressed: () => context.push('/medicine-search'),
-            icon: const Icon(
-              Iconsax.search_normal_1,
-              color: AppColors.textPrimary,
-            ),
+            icon: const Icon(Iconsax.search_normal_1),
           ),
           IconButton(
-            onPressed: () {}, // Filter logic
-            icon: const Icon(Iconsax.filter_edit, color: AppColors.textPrimary),
+            onPressed: () => _showFilterBottomSheet(context),
+            icon: const Icon(Iconsax.filter_edit),
           ),
-          const SizedBox(width: 8),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: () =>
             ref.read(medicineProvider.notifier).fetchAllMedicines(),
         child: CustomScrollView(
+          controller: _scrollController,
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
@@ -111,15 +113,188 @@ class _MedicineListScreenState extends ConsumerState<MedicineListScreen> {
                   }, childCount: medicineState.medicines.length),
                 ),
               ),
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 100), // Space for bottom nav
-            ),
+            if (medicineState.isFetchingMore)
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20.0),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+              )
+            else
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 100), // Space for bottom nav
+              ),
           ],
         ),
       ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 1,
         onTap: (index) {},
+      ),
+    );
+  }
+
+  void _showFilterBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        final currentRange = ref
+            .read(medicineProvider)
+            .listPriceRange
+            ?.firstOrNull;
+        String initialSelection = 'All';
+        if (currentRange == '0-100') {
+          initialSelection = 'Under 100';
+        } else if (currentRange == '100-500') {
+          initialSelection = '100-500';
+        } else if (currentRange == '500-1000') {
+          initialSelection = '500-1000';
+        } else if (currentRange == '1000-5000') {
+          initialSelection = '1000-5000';
+        } else if (currentRange == '5000+') {
+          initialSelection = 'Above 5000';
+        }
+
+        return _FilterBottomSheet(
+          initialSelection: initialSelection,
+          onApply: (priceRangeLabel) {
+            context.pop();
+            if (priceRangeLabel == null || priceRangeLabel == 'All') {
+              ref
+                  .read(medicineProvider.notifier)
+                  .fetchAllMedicines(clearFilter: true);
+            } else {
+              List<String> range = [];
+              if (priceRangeLabel == 'Under 100') {
+                range = ['0-100'];
+              } else if (priceRangeLabel == '100-500') {
+                range = ['100-500'];
+              } else if (priceRangeLabel == '500-1000') {
+                range = ['500-1000'];
+              } else if (priceRangeLabel == '1000-5000') {
+                range = ['1000-5000'];
+              } else if (priceRangeLabel == 'Above 5000') {
+                range = ['5000+'];
+              }
+
+              ref
+                  .read(medicineProvider.notifier)
+                  .fetchAllMedicines(priceRange: range);
+            }
+          },
+        );
+      },
+    );
+  }
+}
+
+class _FilterBottomSheet extends StatefulWidget {
+  final String initialSelection;
+  final Function(String?) onApply;
+
+  const _FilterBottomSheet({
+    required this.initialSelection,
+    required this.onApply,
+  });
+
+  @override
+  State<_FilterBottomSheet> createState() => _FilterBottomSheetState();
+}
+
+class _FilterBottomSheetState extends State<_FilterBottomSheet> {
+  late String _selectedRange;
+
+  final List<String> _priceRanges = [
+    'All',
+    'Under 100',
+    '100-500',
+    '500-1000',
+    '1000-5000',
+    'Above 5000',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedRange = widget.initialSelection;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Filter by Price',
+                style: AppTextStyles.header.copyWith(fontSize: 20),
+              ),
+              IconButton(
+                onPressed: () => context.pop(),
+                icon: const Icon(
+                  Iconsax.close_circle,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 12,
+            children: _priceRanges.map((range) {
+              final isSelected = _selectedRange == range;
+              return ChoiceChip(
+                label: Text(range),
+                selected: isSelected,
+                selectedColor: AppColors.primary,
+                labelStyle: TextStyle(
+                  color: isSelected ? Colors.white : AppColors.textPrimary,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+                backgroundColor: AppColors.surface,
+                onSelected: (selected) {
+                  setState(() {
+                    _selectedRange = range;
+                  });
+                },
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: () => widget.onApply(_selectedRange),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 0,
+              ),
+              child: const Text(
+                'Apply Filter',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
       ),
     );
   }
