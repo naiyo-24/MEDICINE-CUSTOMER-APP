@@ -18,17 +18,28 @@ class CartAddressCard extends ConsumerWidget {
 
     if (addresses.isEmpty) {
       return Container(
-        padding: const EdgeInsets.all(AppSpacing.cardPadding),
+        padding: const EdgeInsets.all(20),
         decoration: AppCardStyles.sleekCard,
-        child: const Row(
+        child: Column(
           children: [
-            Icon(Iconsax.location, color: AppColors.error),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'No saved addresses found. Please add an address in your profile.',
-                style: AppTextStyles.bodyMedium,
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.error.withAlpha(20),
+                shape: BoxShape.circle,
               ),
+              child: const Icon(Iconsax.location_add, color: AppColors.error, size: 32),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'No Saved Addresses',
+              style: AppTextStyles.cardTitle,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Please add an address in your profile to proceed with the checkout.',
+              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -41,8 +52,21 @@ class CartAddressCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Deliver To', style: AppTextStyles.cardTitle),
-          const SizedBox(height: 12),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withAlpha(20),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Iconsax.location, color: AppColors.primary, size: 18),
+              ),
+              const SizedBox(width: 12),
+              const Text('Deliver To', style: AppTextStyles.cardTitle),
+            ],
+          ),
+          const SizedBox(height: 16),
           ...addresses.map((address) {
             final isSelected = cartState.selectedAddress == address;
             return InkWell(

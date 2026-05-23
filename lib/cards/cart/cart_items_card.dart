@@ -30,10 +30,39 @@ class CartItemsCard extends ConsumerWidget {
 
     return Container(
       decoration: AppCardStyles.sleekCard,
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.cardPadding),
       child: Column(
-        children: cartState.items.map((item) {
-          return _buildCartItem(context, ref, item);
-        }).toList(),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.cardPadding),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withAlpha(20),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Iconsax.bag_2, color: AppColors.primary, size: 18),
+                ),
+                const SizedBox(width: 12),
+                Text('Items (${cartState.items.length})', style: AppTextStyles.cardTitle),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Divider(height: 1),
+          ...cartState.items.asMap().entries.map((entry) {
+            final isLast = entry.key == cartState.items.length - 1;
+            return Column(
+              children: [
+                _buildCartItem(context, ref, entry.value),
+                if (!isLast) const Divider(height: 1, indent: 84),
+              ],
+            );
+          }),
+        ],
       ),
     );
   }
@@ -96,30 +125,36 @@ class CartItemsCard extends ConsumerWidget {
           ),
           Container(
             decoration: BoxDecoration(
-              border: Border.all(color: AppColors.divider),
+              color: AppColors.primary.withAlpha(15),
               borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.primary.withAlpha(50)),
             ),
             child: Row(
               children: [
-                IconButton(
-                  icon: const Icon(Iconsax.minus, size: 16),
-                  onPressed: () {
-                    ref.read(cartProvider.notifier).updateQuantity(medicine.medicineId!, item.quantity - 1);
-                  },
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                InkWell(
+                  onTap: () => ref.read(cartProvider.notifier).updateQuantity(medicine.medicineId!, item.quantity - 1),
+                  borderRadius: const BorderRadius.horizontal(left: Radius.circular(8)),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(Iconsax.minus, size: 16, color: AppColors.primary),
+                  ),
                 ),
-                Text(
-                  '${item.quantity}',
-                  style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  constraints: const BoxConstraints(minWidth: 20),
+                  child: Text(
+                    '${item.quantity}',
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary),
+                  ),
                 ),
-                IconButton(
-                  icon: const Icon(Iconsax.add, size: 16),
-                  onPressed: () {
-                    ref.read(cartProvider.notifier).updateQuantity(medicine.medicineId!, item.quantity + 1);
-                  },
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                InkWell(
+                  onTap: () => ref.read(cartProvider.notifier).updateQuantity(medicine.medicineId!, item.quantity + 1),
+                  borderRadius: const BorderRadius.horizontal(right: Radius.circular(8)),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Icon(Iconsax.add, size: 16, color: AppColors.primary),
+                  ),
                 ),
               ],
             ),

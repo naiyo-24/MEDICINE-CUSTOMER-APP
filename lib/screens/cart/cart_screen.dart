@@ -27,10 +27,11 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final cartState = ref.watch(cartProvider);
-    ref.watch(chargesProvider);
+    final chargesState = ref.watch(chargesProvider);
     final bool isCartEmpty = cartState.items.isEmpty;
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: CustomAppBar(
         title: 'Shopping Cart',
         subtitle: isCartEmpty
@@ -49,7 +50,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               const SizedBox(height: AppSpacing.sectionGap),
               const CartAddressCard(),
               const SizedBox(
-                height: 100,
+                height: 200,
               ), // extra padding for bottom navigation
             ],
           ],
@@ -61,65 +62,113 @@ class _CartScreenState extends ConsumerState<CartScreen> {
               padding: const EdgeInsets.all(AppSpacing.screenPadding),
               decoration: BoxDecoration(
                 color: AppColors.surface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withAlpha(10),
-                    blurRadius: 10,
+                    color: Colors.black.withAlpha(15),
+                    blurRadius: 20,
                     offset: const Offset(0, -5),
                   ),
                 ],
               ),
               child: SafeArea(
-                child: Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.textPrimary,
-                          side: const BorderSide(color: AppColors.divider),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Total Payable',
+                          style: AppTextStyles.cardSubtitle,
                         ),
-                        onPressed: () {
-                          if (cartState.selectedAddress == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please select an address first'),
-                              ),
-                            );
-                            return;
-                          }
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Processing Cash on Delivery...'),
-                            ),
-                          );
-                        },
-                        child: const Text('Pay COD'),
-                      ),
+                        Text(
+                          '₹${cartState.getSummary(chargesState.selectedCharge).totalAmountToBePaid.toStringAsFixed(2)}',
+                          style: AppTextStyles.cardTitle.copyWith(
+                            color: AppColors.primary,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        onPressed: () {
-                          if (cartState.selectedAddress == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please select an address first'),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.textPrimary,
+                              side: const BorderSide(color: AppColors.primary),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                            );
-                            return;
-                          }
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Redirecting to Payment...'),
                             ),
-                          );
-                        },
-                        child: const Text('Pay Online'),
-                      ),
+                            onPressed: () {
+                              if (cartState.selectedAddress == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please select an address first',
+                                    ),
+                                    backgroundColor: AppColors.error,
+                                  ),
+                                );
+                                return;
+                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Processing Cash on Delivery...',
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Pay COD',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 2,
+                            ),
+                            onPressed: () {
+                              if (cartState.selectedAddress == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please select an address first',
+                                    ),
+                                    backgroundColor: AppColors.error,
+                                  ),
+                                );
+                                return;
+                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Redirecting to Payment...'),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Pay Online',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
