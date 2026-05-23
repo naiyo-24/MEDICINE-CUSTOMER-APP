@@ -38,11 +38,31 @@ class MedicineService {
     }
   }
 
-  Future<Response> searchMedicines(String query, {int page = 1, int limit = 20}) async {
+  Future<Response> searchMedicines({
+    String? searchTerm,
+    List<String>? priceRange,
+    String? category,
+    int page = 1,
+    int limit = 20,
+  }) async {
     try {
+      final Map<String, dynamic> queryParams = {
+        'page': page,
+        'limit': limit,
+      };
+      if (searchTerm != null && searchTerm.isNotEmpty) {
+        queryParams['search_term'] = searchTerm;
+      }
+      if (priceRange != null && priceRange.isNotEmpty) {
+        queryParams['price_range'] = priceRange;
+      }
+      if (category != null && category.isNotEmpty) {
+        queryParams['category'] = category;
+      }
+
       return await _dio.get(
         ApiUrl.searchMedicines,
-        queryParameters: {'query': query, 'page': page, 'limit': limit},
+        queryParameters: queryParams,
       );
     } catch (e) {
       rethrow;

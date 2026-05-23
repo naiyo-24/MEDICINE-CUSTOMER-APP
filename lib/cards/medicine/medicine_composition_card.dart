@@ -12,8 +12,6 @@ class MedicineCompositionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final details = medicine.medicineDetails;
-
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -49,7 +47,7 @@ class MedicineCompositionCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            details?.medicineComposition ?? 'No composition info available.',
+            medicine.medicineComposition ?? 'No composition info available.',
             style: AppTextStyles.cardSubtitle.copyWith(height: 1.6),
           ),
         ],

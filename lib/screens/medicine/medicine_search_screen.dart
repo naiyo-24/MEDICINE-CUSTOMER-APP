@@ -97,7 +97,7 @@ class _MedicineSearchScreenState extends ConsumerState<MedicineSearchScreen> {
                   ),
                 ),
                 onChanged: (value) {
-                  ref.read(medicineProvider.notifier).searchMedicines(value);
+                  ref.read(medicineProvider.notifier).searchMedicines(searchTerm: value);
                   setState(() {});
                 },
               ),

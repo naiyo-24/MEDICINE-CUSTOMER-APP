@@ -12,8 +12,6 @@ class MedicineDescriptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final details = medicine.medicineDetails;
-
     return Container(
       padding: const EdgeInsets.all(AppSpacing.cardPadding),
       decoration: AppCardStyles.sleekCard,
@@ -37,14 +35,14 @@ class MedicineDescriptionCard extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                'Qty: ${details?.medicineQuantity ?? 'N/A'}',
+                'Qty: ${medicine.medicineQuantity ?? 'N/A'}',
                 style: AppTextStyles.cardSubtitle.copyWith(color: AppColors.primary),
               ),
             ],
           ),
           const SizedBox(height: 16),
           Text(
-            details?.medicineDescription ?? 'No description available.',
+            medicine.medicineDescription ?? 'No description available.',
             style: AppTextStyles.cardSubtitle.copyWith(height: 1.6),
           ),
         ],

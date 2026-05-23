@@ -70,14 +70,24 @@ class MedicineNotifier extends StateNotifier<MedicineState> {
     }
   }
 
-  Future<void> searchMedicines(String query) async {
-    if (query.isEmpty) {
+  Future<void> searchMedicines({
+    String? searchTerm,
+    List<String>? priceRange,
+    String? category,
+  }) async {
+    if ((searchTerm == null || searchTerm.isEmpty) &&
+        (priceRange == null || priceRange.isEmpty) &&
+        (category == null || category.isEmpty)) {
       state = state.copyWith(searchResults: []);
       return;
     }
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final response = await _service.searchMedicines(query);
+      final response = await _service.searchMedicines(
+        searchTerm: searchTerm,
+        priceRange: priceRange,
+        category: category,
+      );
       if (response.statusCode == 200) {
         final List data = response.data['data'] ?? [];
         final results = data.map((m) => MedicineModel.fromMap(m)).toList();

@@ -16,8 +16,7 @@ class MedicineSearchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final details = medicine.medicineDetails;
-    final isOutOfStock = medicine.status?.toLowerCase() == 'out of stock';
+    final isOutOfStock = medicine.isActive == false;
 
     return GestureDetector(
       onTap: onTap,
@@ -45,10 +44,10 @@ class MedicineSearchCard extends StatelessWidget {
                 height: 80,
                 color: AppColors.divider,
                 child:
-                    details?.medicinePhoto != null &&
-                        details!.medicinePhoto!.isNotEmpty
+                    medicine.medicinePhoto != null &&
+                        medicine.medicinePhoto!.isNotEmpty
                     ? Image.network(
-                        ApiUrl.imageUrl(details.medicinePhoto),
+                        ApiUrl.imageUrl(medicine.medicinePhoto),
                         fit: BoxFit.cover,
                       )
                     : const Icon(Iconsax.box, color: AppColors.textSecondary),
@@ -62,14 +61,14 @@ class MedicineSearchCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    details?.medicineName ?? 'Medicine Name',
+                    medicine.medicineName ?? 'Medicine Name',
                     style: AppTextStyles.cardTitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    details?.medicineCategory ?? '',
+                    medicine.medicineCategory ?? '',
                     style: AppTextStyles.cardSubtitle.copyWith(
                       color: AppColors.primary,
                       fontSize: 10,
@@ -86,7 +85,7 @@ class MedicineSearchCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        details?.medicineQuantity ?? '',
+                        medicine.medicineQuantity ?? '',
                         style: AppTextStyles.cardSubtitle,
                       ),
                     ],

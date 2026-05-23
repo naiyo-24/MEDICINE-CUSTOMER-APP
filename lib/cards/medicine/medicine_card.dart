@@ -12,8 +12,7 @@ class MedicineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final details = medicine.medicineDetails;
-    final isOutOfStock = medicine.status?.toLowerCase() == 'out of stock';
+    final isOutOfStock = medicine.isActive == false;
 
     return GestureDetector(
       onTap: onTap,
@@ -32,10 +31,10 @@ class MedicineCard extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 1.3,
                     child:
-                        details?.medicinePhoto != null &&
-                            details!.medicinePhoto!.isNotEmpty
+                        medicine.medicinePhoto != null &&
+                            medicine.medicinePhoto!.isNotEmpty
                         ? Image.network(
-                            ApiUrl.imageUrl(details.medicinePhoto),
+                            ApiUrl.imageUrl(medicine.medicinePhoto),
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) =>
                                 _buildPlaceholder(),
@@ -76,14 +75,14 @@ class MedicineCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    details?.medicineName ?? 'Unknown Medicine',
+                    medicine.medicineName ?? 'Unknown Medicine',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.cardTitle,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    details?.medicineQuantity ?? '',
+                    medicine.medicineQuantity ?? '',
                     style: AppTextStyles.cardSubtitle,
                   ),
                   const SizedBox(height: 8),
@@ -101,7 +100,7 @@ class MedicineCard extends StatelessWidget {
                       if (medicine.discountPercent != null &&
                           medicine.discountPercent! > 0)
                         Text(
-                          '₹${details?.mrp?.toStringAsFixed(0) ?? '0'}',
+                          '₹${medicine.mrp?.toStringAsFixed(0) ?? '0'}',
                           style: TextStyle(
                             fontSize: 12,
                             color: AppColors.textSecondary,

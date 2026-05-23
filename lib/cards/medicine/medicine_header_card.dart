@@ -4,7 +4,6 @@ import '../../models/medicine.dart';
 import '../../theme/app_theme.dart';
 import '../../services/api_url.dart';
 import 'package:go_router/go_router.dart';
-import 'shop_bottomsheet.dart';
 
 class MedicineHeaderCard extends StatelessWidget {
   final MedicineModel medicine;
@@ -13,8 +12,7 @@ class MedicineHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final details = medicine.medicineDetails;
-    final isOutOfStock = medicine.status?.toLowerCase() == 'out of stock';
+    final isOutOfStock = medicine.isActive == false;
     final size = MediaQuery.of(context).size;
 
     return SizedBox(
@@ -25,10 +23,10 @@ class MedicineHeaderCard extends StatelessWidget {
           // Background Image
           Positioned.fill(
             child:
-                details?.medicinePhoto != null &&
-                    details!.medicinePhoto!.isNotEmpty
+                medicine.medicinePhoto != null &&
+                    medicine.medicinePhoto!.isNotEmpty
                 ? Image.network(
-                    ApiUrl.imageUrl(details.medicinePhoto),
+                    ApiUrl.imageUrl(medicine.medicinePhoto),
                     fit: BoxFit.cover,
                   )
                 : Container(color: AppColors.divider),
@@ -86,7 +84,7 @@ class MedicineHeaderCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    details?.medicineCategory?.toUpperCase() ?? 'GENERAL',
+                    medicine.medicineCategory?.toUpperCase() ?? 'GENERAL',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -96,7 +94,7 @@ class MedicineHeaderCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  details?.medicineName ?? 'Medicine Name',
+                  medicine.medicineName ?? 'Medicine Name',
                   style: AppTextStyles.header.copyWith(
                     color: Colors.white,
                     fontSize: 28,
@@ -106,7 +104,7 @@ class MedicineHeaderCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      details?.medicineQuantity ?? '',
+                      medicine.medicineQuantity ?? '',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
@@ -134,35 +132,7 @@ class MedicineHeaderCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-                GestureDetector(
-                  onTap: () {
-                    if (medicine.shopDetails != null) {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) =>
-                            ShopBottomSheet(shop: medicine.shopDetails!),
-                      );
-                    }
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(Iconsax.shop, size: 16, color: Colors.white70),
-                      const SizedBox(width: 8),
-                      Text(
-                        medicine.shopDetails?.shopName ?? 'Medy24 Partner',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
+
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -177,7 +147,7 @@ class MedicineHeaderCard extends StatelessWidget {
                     if (medicine.discountPercent != null &&
                         medicine.discountPercent! > 0) ...[
                       Text(
-                        '₹${details?.mrp?.toStringAsFixed(0) ?? '0'}',
+                        '₹${medicine.mrp?.toStringAsFixed(0) ?? '0'}',
                         style: const TextStyle(
                           color: Colors.white60,
                           fontSize: 18,

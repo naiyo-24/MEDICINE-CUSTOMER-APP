@@ -10,8 +10,7 @@ class MedicinePrecautionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final details = medicine.medicineDetails;
-    final precautions = details?.precautions ?? [];
+    final precautions = medicine.precautions ?? [];
 
     return Container(
       padding: const EdgeInsets.all(20),

@@ -24,115 +24,126 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
-      decoration: BoxDecoration(color: AppColors.background.withAlpha(200)),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 24.0,
+        vertical: 16.0,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.background.withAlpha(240), // Slightly more opaque
+      ),
       child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        bottom: false,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                // Leading Section: Logo or Back Button
-                if (showBackButton)
-                  GestureDetector(
-                    onTap:
-                        onBackTap ??
-                        () {
-                          if (context.canPop()) {
-                            context.pop();
-                          } else {
-                            // Fallback if there's nothing to pop
-                            context.go('/home');
-                          }
-                        },
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.divider),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withAlpha(5),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+            // Leading Section: Logo or Back Button
+            if (showBackButton)
+              GestureDetector(
+                onTap:
+                    onBackTap ??
+                    () {
+                      if (context.canPop()) {
+                        context.pop();
+                      } else {
+                        // Fallback if there's nothing to pop
+                        context.go('/home');
+                      }
+                    },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.grey.shade200),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withAlpha(5),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
-                      child: const Icon(
-                        Iconsax.arrow_left_2,
-                        size: 20,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                  )
-                else if (showLogo)
-                  Container(
-                    height: 40,
-                    width: 40,
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Image.asset(
-                      'assets/logo/logo.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-
-                const SizedBox(width: 12),
-
-                // Title and Subtitle Section
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (title != null)
-                        Text(
-                          title!,
-                          style: AppTextStyles.subHeader.copyWith(
-                            fontSize: 18,
-                            height: 1.2,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      if (subtitle != null)
-                        Text(
-                          subtitle!,
-                          style: AppTextStyles.caption.copyWith(
-                            color: AppColors.textSecondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
                     ],
                   ),
-                ),
-
-                // Actions Section
-                if (actions != null)
-                  IconTheme(
-                    data: const IconThemeData(color: AppColors.primary),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: actions!
-                          .map(
-                            (action) => Padding(
-                              padding: const EdgeInsets.only(left: 8),
-                              child: action,
-                            ),
-                          )
-                          .toList(),
-                    ),
+                  child: Icon(
+                    Iconsax.arrow_left_2,
+                    size: 20,
+                    color: Colors.grey.shade700,
                   ),
-              ],
+                ),
+              )
+            else if (showLogo)
+              Container(
+                height: 44,
+                width: 44,
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.grey.shade200),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(5),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Image.asset(
+                  'assets/logo/logo.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+
+            const SizedBox(width: 16),
+
+            // Title and Subtitle Section
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (title != null)
+                    Text(
+                      title!,
+                      style: AppTextStyles.subHeader.copyWith(
+                        fontSize: 20,
+                        height: 1.2,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle!,
+                      style: AppTextStyles.caption.copyWith(
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
+              ),
             ),
-            const SizedBox(height: 12),
+
+            // Actions Section
+            if (actions != null)
+              IconTheme(
+                data: IconThemeData(color: Colors.grey.shade600, size: 24),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: actions!
+                      .map(
+                        (action) => Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: action,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
           ],
         ),
       ),
@@ -140,5 +151,5 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(80);
+  Size get preferredSize => const Size.fromHeight(88);
 }

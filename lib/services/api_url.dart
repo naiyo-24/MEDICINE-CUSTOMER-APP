@@ -55,7 +55,7 @@ class ApiUrl {
       "$customers/addresses/$customerId/$addressId";
 
   // Medicine Inventory Endpoints
-  static const String medicineInventory = "$baseUrl/medicine-inventory";
+  static const String medicineInventory = "$baseUrl/medicines";
   static const String getMedicineAll = "$medicineInventory/get-all";
   static const String searchMedicines = "$medicineInventory/search";
   static String getMedicineById(String id) => "$medicineInventory/get-by/$id";
