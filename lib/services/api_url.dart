@@ -48,7 +48,7 @@ class ApiUrl {
   static const String checkPhone = "$customers/check-phone";
   static const String sendOtp = "$customers/send-otp";
   static const String verifyOtp = "$customers/verify-otp";
-  static String getProfile(String id) => "$customers/profile/$id";
+  static String getProfile(String id) => "$customers/get-profile/$id";
   static String updateProfile(String id) => "$customers/profile/$id";
   static String addAddress(String id) => "$customers/add-addresses/$id";
   static String deleteAddress(String customerId, int addressId) =>
@@ -69,7 +69,8 @@ class ApiUrl {
   }
 
   // Platform Fee Endpoints
-  static const String platformFee = "http://192.168.0.222:8000/admin/earnings/list";
+  static const String platformFee =
+      "http://192.168.0.222:8000/admin/earnings/list";
 
   /// Get Razorpay Key ID from environment variables
   static String get razorpayKeyId {
