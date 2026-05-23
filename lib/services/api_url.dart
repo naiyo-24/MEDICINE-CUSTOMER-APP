@@ -50,9 +50,9 @@ class ApiUrl {
   static const String verifyOtp = "$customers/verify-otp";
   static String getProfile(String id) => "$customers/profile/$id";
   static String updateProfile(String id) => "$customers/profile/$id";
-  static String addAddress(String id) => "$customers/addresses/$id";
+  static String addAddress(String id) => "$customers/add-addresses/$id";
   static String deleteAddress(String customerId, int addressId) =>
-      "$customers/addresses/$customerId/$addressId";
+      "$customers/delete-address/$customerId/$addressId";
 
   // Medicine Inventory Endpoints
   static const String medicineInventory = "$baseUrl/medicines";
