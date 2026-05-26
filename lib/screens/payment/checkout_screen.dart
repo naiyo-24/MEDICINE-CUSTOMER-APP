@@ -199,8 +199,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           receiverPhone: user?.phoneNumber ?? 'N/A',
           deliveryAddress: {
             'address': addressString,
-            'lat': selectedAddress?['lat'] ?? 0.0,
-            'lng': selectedAddress?['lng'] ?? 0.0,
+            'lat': selectedAddress?['latitude'] ?? 0.0,
+            'lng': selectedAddress?['longitude'] ?? 0.0,
           },
         );
 

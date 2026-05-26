@@ -23,14 +23,15 @@ class CartService {
     return Options(headers: {'Authorization': 'Bearer $customerId'});
   }
 
-  Future<Response> addItem(String customerId, String medicineId, int quantity) async {
+  Future<Response> addItem(
+    String customerId,
+    String medicineId,
+    int quantity,
+  ) async {
     try {
       return await _dio.post(
         ApiUrl.cartAddItem,
-        data: {
-          'medicine_id': medicineId,
-          'quantity': quantity,
-        },
+        data: {'medicine_id': medicineId, 'quantity': quantity},
         options: _getOptions(customerId),
       );
     } catch (e) {
@@ -38,12 +39,18 @@ class CartService {
     }
   }
 
-  Future<Response> updateItem(String customerId, String medicineId, int quantity) async {
+  Future<Response> updateItem(
+    String customerId,
+    String medicineId,
+    int quantity,
+  ) async {
     try {
+      final options = _getOptions(customerId);
+      options.contentType = Headers.jsonContentType;
       return await _dio.put(
         ApiUrl.cartUpdateItem(medicineId),
         data: quantity,
-        options: _getOptions(customerId),
+        options: options,
       );
     } catch (e) {
       rethrow;
@@ -63,10 +70,7 @@ class CartService {
 
   Future<Response> getCart(String customerId) async {
     try {
-      return await _dio.get(
-        ApiUrl.cartGet,
-        options: _getOptions(customerId),
-      );
+      return await _dio.get(ApiUrl.cartGet, options: _getOptions(customerId));
     } catch (e) {
       rethrow;
     }
